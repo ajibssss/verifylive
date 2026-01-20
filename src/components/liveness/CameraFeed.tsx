@@ -86,24 +86,10 @@ export const CameraFeed = forwardRef<CameraFeedRef>((props, ref) => {
         const syncCanvasDimensions = () => {
              if (videoRef.current && canvasRef.current) {
                  const video = videoRef.current;
-                 const canvas = canvasRef.current;
-                 
-                 // Only sync if dimensions changed
-                 if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
-                     console.log('[SYNC] Updating canvas dimensions:', {
-                         from: { width: canvas.width, height: canvas.height },
-                         to: { width: video.videoWidth, height: video.videoHeight }
-                     });
-                     canvas.width = video.videoWidth;
-                     canvas.height = video.videoHeight;
-                 }
+                 canvasRef.current.width = video.videoWidth;
+                 canvasRef.current.height = video.videoHeight;
              }
         };
-
-        // Sync on video metadata load
-        if (videoRef.current) {
-            videoRef.current.addEventListener('loadeddata', syncCanvasDimensions);
-        }
 
         let lastVideoTime = -1;
         const detect = () => {
@@ -119,31 +105,18 @@ export const CameraFeed = forwardRef<CameraFeedRef>((props, ref) => {
                      if (startTimeMs > lastVideoTime && startTimeMs - lastVideoTime > 33) {
                          lastVideoTime = startTimeMs;
                          
-                         // Sync canvas dimensions BEFORE drawing
+                         // Sync canvas dimensions every frame
                          syncCanvasDimensions();
                          
                          const ctx = canvasRef.current.getContext("2d");
                          if (ctx) {
-                             // Draw video frame first (so user can see the camera)
-                             ctx.drawImage(video, 0, 0, ctx.canvas.width, ctx.canvas.height);
+                             // Clear canvas
+                             ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
                              try {
                                  const results = landmarker.detectForVideo(video, startTimeMs);
                                  
-                                 // Debug: log first point mapping
-                                 if (results.faceLandmarks?.[0]?.[0]) {
-                                     const point = results.faceLandmarks[0][0];
-                                     console.log('[POINT]', {
-                                         normalized: { x: point.x.toFixed(3), y: point.y.toFixed(3) },
-                                         canvas: { w: ctx.canvas.width, h: ctx.canvas.height },
-                                         pixels: { 
-                                             x: Math.round(point.x * ctx.canvas.width), 
-                                             y: Math.round(point.y * ctx.canvas.height)
-                                         }
-                                     });
-                                 }
-                                 
-                                 // Draw face mesh on top of video
+                                 // Draw face mesh with direct coordinate mapping
                                  drawFaceMesh(ctx, results);
                              } catch (err) {
                                  console.warn("Frame processing skipped:", err);
@@ -187,18 +160,18 @@ export const CameraFeed = forwardRef<CameraFeedRef>((props, ref) => {
                 {error}
             </div>
         )}
-      {/* Hidden video - ONLY for MediaPipe processing */}
+      {/* Hidden video - source for MediaPipe */}
       <video
         ref={videoRef}
-        className="hidden"
+        className="absolute inset-0 w-full h-full object-contain opacity-0 pointer-events-none"
         playsInline
         muted
         autoPlay
       />
-      {/* Canvas renders EVERYTHING: video frame + face mesh points */}
+      {/* Visible canvas - shows detection overlay */}
       <canvas
         ref={canvasRef}
-        className="w-full h-full"
+        className="absolute inset-0 w-full h-full object-contain"
       />
     </div>
   );
