@@ -15,7 +15,7 @@ export function AppFooter() {
         {/* Left: ASCII Logo (Global absolute left alignment) */}
         {/* Size reduced by ~25%: text-[4px] (mobile) / text-[6px] (desktop) */}
         <div className="absolute bottom-6 left-6 pointer-events-auto">
-          <a href="https://aiexx.dev" target="_blank" className="block group">
+          <a href="https://artificialuniverse.tech/p/aiexxplorer" target="_blank" className="block group">
               <table className="border-collapse">
                 <tbody>
                   <tr>
@@ -28,7 +28,7 @@ export function AppFooter() {
                           fontVariantLigatures: 'none'
                         }}
                       >
-{`   █████╗ ██╗███████╗██╗  ██╗██╗  ██╗
+{`  █████╗ ██╗███████╗██╗  ██╗██╗  ██╗
    ██╔══██╗██║██╔════╝╚██╗██╔╝╚██╗██╔╝
    ███████║██║█████╗   ╚███╔╝  ╚███╔╝
    ██╔══██║██║██╔══╝   ██╔██╗  ██╔██╗
