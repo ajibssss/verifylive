@@ -12,7 +12,6 @@ export const CameraFeed = forwardRef<CameraFeedRef>((props, ref) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [error, setError] = useState<string | null>(null);
-  const requestRef = useRef<number>(null);
   const [isMounted, setIsMounted] = useState(false);
 
   // Removed standalone effect as it's merged into the main one to coordinate cleanup
@@ -156,14 +155,14 @@ export const CameraFeed = forwardRef<CameraFeedRef>((props, ref) => {
 
   if (!isMounted) {
       return (
-        <div className="relative w-full max-w-[640px] aspect-[4/3] bg-black rounded-lg overflow-hidden mx-auto animate-pulse flex items-center justify-center">
+        <div className="relative w-full max-w-[640px] aspect-video bg-black rounded-lg overflow-hidden mx-auto animate-pulse flex items-center justify-center">
             <span className="text-muted-foreground text-sm">Initializing Camera...</span>
         </div>
       );
   }
 
   return (
-    <div className="relative w-full max-w-[640px] aspect-[4/3] bg-black rounded-lg overflow-hidden mx-auto">
+    <div className="relative w-full max-w-[640px] aspect-video bg-black rounded-lg overflow-hidden mx-auto">
         {error && (
             <div className="absolute inset-0 flex items-center justify-center text-red-500 bg-black/80 z-20 text-center p-4">
                 {error}
@@ -171,14 +170,14 @@ export const CameraFeed = forwardRef<CameraFeedRef>((props, ref) => {
         )}
       <video
         ref={videoRef}
-        className="absolute top-0 left-0 w-full h-full object-cover transform scale-x-[-1]" 
+        className="absolute top-0 left-0 w-full h-full object-contain transform scale-x-[-1]" 
         playsInline
         muted
         autoPlay
       />
       <canvas
         ref={canvasRef}
-        className="absolute top-0 left-0 w-full h-full pointer-events-none z-10 transform scale-x-[-1]"
+        className="absolute top-0 left-0 w-full h-full object-contain pointer-events-none z-10 transform scale-x-[-1]"
       />
     </div>
   );

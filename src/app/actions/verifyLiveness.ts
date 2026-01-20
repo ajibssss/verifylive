@@ -9,22 +9,44 @@ export interface LivenessResult {
   reasoning: string;
 }
 
-export async function verifyLiveness(base64Image: string): Promise<LivenessResult> {
+export async function verifyLiveness(frames: string[]): Promise<LivenessResult> {
   try {
-    // Remove data URL prefix if present (e.g., "data:image/png;base64,")
-    const base64Data = base64Image.replace(/^data:image\/\w+;base64,/, "");
+    const prompt = `
+    Analyze this sequence of 5 video frames for liveness. 
+    The user was asked to perform the following challenges in order:
+    1. Neutral Face
+    2. Turn Right (3D check)
+    3. Smile/Expression (Muscle check)
+    4. Zoom In (Depth check)
+    5. Hold ID/Hand (Possession/Occlusion check)
 
-    const prompt = "Analyze this image for liveness. Is this a real person or a deepfake/screen attack? Return JSON.";
+    FORENSIC ANALYSIS REQUIRED:
+    - **Consistency**: Do features remain consistent across angles/lighting?
+    - **3D Structure**: Does the face rotate naturally or warp like a 2D texture?
+    - **Micro-expressions**: Are eye movements and muscle flexes natural?
+    - **Artifacts**: Look for screen moire, edge blurring, or glitching.
 
-    const result = await getGeminiModel().generateContent([
-      prompt,
-      {
-        inlineData: {
-          data: base64Data,
-          mimeType: "image/jpeg",
-        },
-      },
-    ]);
+    Return JSON with:
+    - is_real: boolean
+    - confidence: number (0-100)
+    - anomalies: string[] (list suspicious elements)
+    - reasoning: string (brief explanation of the verdict)
+    `;
+
+    // Prepare inputs for Gemini (Prompt + 5 Images)
+    const inputs: (string | { inlineData: { data: string; mimeType: string } })[] = [prompt];
+    
+    frames.forEach((frameBase64) => {
+        const cleanData = frameBase64.replace(/^data:image\/\w+;base64,/, "");
+        inputs.push({
+            inlineData: {
+                data: cleanData,
+                mimeType: "image/jpeg",
+            },
+        });
+    });
+
+    const result = await getGeminiModel().generateContent(inputs);
 
     const response = await result.response;
     const text = response.text();
@@ -36,7 +58,7 @@ export async function verifyLiveness(base64Image: string): Promise<LivenessResul
         const parsed: LivenessResult = JSON.parse(cleanText);
         return parsed;
     } catch (parseError) {
-        console.error("Failed to parse Gemini response:", text);
+        console.error("Failed to parse Gemini response:", text, parseError);
         throw new Error("Invalid response format from AI Forensic Auditor.");
     }
 

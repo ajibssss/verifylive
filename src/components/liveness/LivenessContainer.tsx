@@ -9,21 +9,44 @@ export function LivenessContainer() {
   const cameraRef = useRef<CameraFeedRef>(null);
   const [isVerifying, setIsVerifying] = useState(false);
   const [result, setResult] = useState<LivenessResult | null>(null);
+  const [step, setStep] = useState(0);
+  const [frames, setFrames] = useState<string[]>([]);
 
-  const handleVerify = async () => {
+  const CHALLENGES = [
+      { title: "Neutral Face", instruction: "Look directly at the camera with a neutral expression." },
+      { title: "Turn Right", instruction: "Turn your face slightly to the right." },
+      { title: "Smile", instruction: "Smile widely showing your teeth." },
+      { title: "Zoom In", instruction: "Move your face closer to the camera." },
+      { title: "Proof of Possession", instruction: "Hold a document or hand next to your face." }
+  ];
+
+  const handleCapture = async () => {
     if (!cameraRef.current) return;
 
     const frame = cameraRef.current.captureFrame();
     if (!frame) {
-        alert("Could not capture frame. Please ensure camera is active.");
+        alert("Could not capture frame. Ensure camera is active.");
         return;
     }
 
+    const newFrames = [...frames, frame];
+    setFrames(newFrames);
+
+    if (step < CHALLENGES.length - 1) {
+        // Move to next challenge
+        setStep(prev => prev + 1);
+    } else {
+        // All challenges completed, verify
+        await executeVerification(newFrames);
+    }
+  };
+
+  const executeVerification = async (capturedFrames: string[]) => {
     setIsVerifying(true);
     setResult(null);
 
     try {
-        const data = await verifyLiveness(frame);
+        const data = await verifyLiveness(capturedFrames);
         setResult(data);
     } catch (error) {
         console.error(error);
@@ -33,15 +56,32 @@ export function LivenessContainer() {
     }
   };
 
+  const resetFlow = () => {
+    setResult(null);
+    setStep(0);
+    setFrames([]);
+  };
+
+  const currentChallenge = CHALLENGES[step];
+  const progress = ((step + 1) / CHALLENGES.length) * 100;
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground p-4 pb-40 overflow-y-auto">
       <div className="w-full max-w-2xl text-center space-y-4">
         <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-chart-1">
           VerifyLive Check
         </h1>
-        <p className="text-muted-foreground text-sm">
-          Position your face in the frame. We process everything locally.
-        </p>
+        
+        {!result && (
+             <div className="space-y-1">
+                <h2 className="text-xl font-semibold text-primary">{currentChallenge.title}</h2>
+                <p className="text-muted-foreground text-sm">{currentChallenge.instruction}</p>
+                <div className="w-full bg-secondary h-2 rounded-full mt-2 overflow-hidden">
+                    <div className="bg-primary h-full transition-all duration-500 ease-out" style={{ width: `${progress}%` }}></div>
+                </div>
+                <p className="text-xs text-muted-foreground pt-1">Step {step + 1} of {CHALLENGES.length}</p>
+            </div>
+        )}
 
         <div className="relative mx-auto border-2 border-border rounded-xl overflow-hidden shadow-2xl shadow-primary/20 bg-card">
              <CameraFeed ref={cameraRef} />
@@ -50,7 +90,7 @@ export function LivenessContainer() {
                 <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-30">
                     <div className="flex flex-col items-center gap-2">
                         <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-                        <span className="text-primary font-mono text-sm animate-pulse">Contacting Gemini 3...</span>
+                        <span className="text-primary font-mono text-sm animate-pulse">Forensic Analysis in Progress...</span>
                     </div>
                 </div>
              )}
@@ -66,10 +106,10 @@ export function LivenessContainer() {
                         ))}
                     </div>
                      <button
-                        onClick={() => setResult(null)}
+                        onClick={resetFlow}
                         className="px-6 py-2 bg-primary text-primary-foreground font-bold rounded-full hover:opacity-90 transition-opacity"
                     >
-                        Scan Again
+                        New Verification
                     </button>
                 </div>
              )}
@@ -78,12 +118,12 @@ export function LivenessContainer() {
         <div className="flex flex-col items-center gap-4 mt-6">
             {!result && (
                 <button
-                    onClick={handleVerify}
+                    onClick={handleCapture}
                     disabled={isVerifying}
                     className="group relative px-8 py-3 bg-primary text-primary-foreground rounded-full font-bold text-lg shadow-lg hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <span className="flex items-center gap-2">
-                       {isVerifying ? 'Analyzing...' : 'Verify Liveness'}
+                       {isVerifying ? 'Processing...' : (step === CHALLENGES.length - 1 ? 'Finish & Verify' : 'Capture & Next')}
                     </span>
                     <div className="absolute inset-0 rounded-full ring-2 ring-white/20 group-hover:ring-white/40 transition-all"></div>
                 </button>
