@@ -1,5 +1,7 @@
 # VerifyLive 🛡️
 
+![CI Status](https://github.com/AIExxplorer/verifylive/actions/workflows/ci-quality.yml/badge.svg)
+
 > **Competidor do HACKATHON DO GEMINI 3** 🏆
 > _Biometric Liveness Detection & Anti-Deepfake System powered by Gemini 3 Multimodal._
 > _Compliance with LGPD & Lei Felca._
