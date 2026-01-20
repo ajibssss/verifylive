@@ -1,10 +1,13 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+  schemas   = ["auth", "public"]
 }
 
 model UserProfile {
@@ -17,6 +20,7 @@ model UserProfile {
   updatedAt   DateTime? @updatedAt @map("updated_at")
 
   @@map("profiles")
+  @@schema("public")
 }
 
 model AuditLog {
@@ -31,4 +35,5 @@ model AuditLog {
   userAgent  String?  @map("user_agent")
 
   @@map("audit_logs")
+  @@schema("public")
 }

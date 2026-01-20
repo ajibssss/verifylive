@@ -16,8 +16,13 @@ export const CameraFeed = forwardRef<CameraFeedRef>((props, ref) => {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
+    // Fix: We don't need to track mounting for this specific hydration fix if we just rely on client-side loading
+    const timer = setTimeout(() => setIsMounted(true), 0);
+    return () => clearTimeout(timer);
+  }, []); // Run once on mount
+
+  // ... rest of component
+
 
   useImperativeHandle(ref, () => ({
     captureFrame: () => {
@@ -38,7 +43,6 @@ export const CameraFeed = forwardRef<CameraFeedRef>((props, ref) => {
 
   useEffect(() => {
     let video: HTMLVideoElement | null = null;
-    let resizeObserver: ResizeObserver | null = null;
 
     const startCamera = async () => {
       try {
@@ -74,6 +78,7 @@ export const CameraFeed = forwardRef<CameraFeedRef>((props, ref) => {
         if (!landmarker || !videoRef.current || !canvasRef.current) return;
 
         // Ensure canvas matches video internal resolution for drawing, but css handles display
+    // Ensure canvas matches video internal resolution for drawing
         const syncCanvas = () => {
              if (videoRef.current && canvasRef.current) {
                  canvasRef.current.width = videoRef.current.videoWidth;
