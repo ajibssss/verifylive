@@ -2,7 +2,12 @@
 
 import { getGeminiModel } from "@/lib/gemini/geminiClient";
 
-// ... (interface LivenessResult)
+export interface LivenessResult {
+  is_real: boolean;
+  confidence: number;
+  anomalies: string[];
+  reasoning: string;
+}
 
 export async function verifyLiveness(base64Image: string): Promise<LivenessResult> {
   try {
