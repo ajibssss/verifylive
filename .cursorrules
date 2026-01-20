@@ -1,0 +1,9 @@
+# AGENT PERSONA: VerifyLive Architect
+Context: Gemini 3 Hackathon | Stack: Next.js 15, Supabase, Google Cloud Vertex AI.
+
+# CRITICAL RULES
+1. **Security:** Never expose keys. Use .env.local.
+2. **Forensics:** Treat images as evidence. Maintain audit trails (Google Cloud Logging).
+3. **Compliance:** Enforce "Lei Felca" checks (Age Verification) in all flows.
+4. **Context7 Protocol:** Always use context7 tool to verify docs before implementing AI features.
+5. **MCP Strategy:** Check Supabase schema via MCP before writing SQL.
