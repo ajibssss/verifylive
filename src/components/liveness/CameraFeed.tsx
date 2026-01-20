@@ -110,14 +110,32 @@ export const CameraFeed = forwardRef<CameraFeedRef>((props, ref) => {
                          
                          const ctx = canvasRef.current.getContext("2d");
                          if (ctx) {
+                             // DIAGNOSTICS
+                             console.log('[DIMENSIONS]', {
+                                 video: { w: video.videoWidth, h: video.videoHeight },
+                                 canvas: { w: ctx.canvas.width, h: ctx.canvas.height }
+                             });
+
                              // Draw video frame on canvas (so user can see camera)
                              ctx.drawImage(video, 0, 0, ctx.canvas.width, ctx.canvas.height);
 
                              try {
                                  const results = landmarker.detectForVideo(video, startTimeMs);
                                  
-                                 // Draw face mesh points on top of video
-                                 drawFaceMesh(ctx, results);
+                                 // DIAGNOSTICS
+                                 if (results.faceLandmarks?.[0]?.[4]) {
+                                     const nose = results.faceLandmarks[0][4]; // Nose tip
+                                     console.log('[NOSE]', {
+                                         normalized: { x: nose.x.toFixed(3), y: nose.y.toFixed(3) },
+                                         pixels: { 
+                                             x: Math.round(nose.x * ctx.canvas.width), 
+                                             y: Math.round(nose.y * ctx.canvas.height)
+                                         }
+                                     });
+                                 }
+                                 
+                                 // Draw face mesh points on top of video with aspect ratio correction
+                                 drawFaceMesh(ctx, results, video);
                              } catch (err) {
                                  console.warn("Frame processing skipped:", err);
                              }
