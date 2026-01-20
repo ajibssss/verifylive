@@ -110,13 +110,13 @@ export const CameraFeed = forwardRef<CameraFeedRef>((props, ref) => {
                          
                          const ctx = canvasRef.current.getContext("2d");
                          if (ctx) {
-                             // Clear canvas
-                             ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                             // Draw video frame first (so user can see the camera)
+                             ctx.drawImage(video, 0, 0, ctx.canvas.width, ctx.canvas.height);
 
                              try {
                                  const results = landmarker.detectForVideo(video, startTimeMs);
                                  
-                                 // Draw face mesh with direct coordinate mapping
+                                 // Draw face mesh on top of video
                                  drawFaceMesh(ctx, results);
                              } catch (err) {
                                  console.warn("Frame processing skipped:", err);
