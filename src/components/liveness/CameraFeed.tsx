@@ -95,6 +95,9 @@ export const CameraFeed = forwardRef<CameraFeedRef>((props, ref) => {
                  canvasRef.current.height = videoRef.current.videoHeight;
              }
         }
+        
+        // CRITICAL: Sync canvas immediately before starting detection loop
+        syncCanvas();
         videoRef.current.addEventListener('loadeddata', syncCanvas);
 
         let lastVideoTime = -1;
@@ -119,16 +122,16 @@ export const CameraFeed = forwardRef<CameraFeedRef>((props, ref) => {
                          
                          const ctx = canvasRef.current.getContext("2d");
                          if (ctx) {
-                             // Clear and draw the video frame (mirrored) onto the canvas
+                             // Draw mirrored video frame 
                              ctx.save();
-                             ctx.scale(-1, 1); // Flip horizontally
+                             ctx.scale(-1, 1);
                              ctx.drawImage(video, -canvasRef.current.width, 0, canvasRef.current.width, canvasRef.current.height);
                              ctx.restore();
 
                              try {
                                  const results = landmarker.detectForVideo(video, startTimeMs);
-                                 // Draw face mesh on top of the video frame (also mirrored)
-                                 drawFaceMesh(ctx, results, true); // Pass mirror flag
+                                 // Draw mirrored face mesh points
+                                 drawFaceMesh(ctx, results, true);
                              } catch (err) {
                                  console.warn("Frame processing skipped:", err);
                              }
