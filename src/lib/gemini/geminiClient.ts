@@ -19,11 +19,12 @@ const genAI = new Proxy({} as GoogleGenerativeAI, {
   },
 });
 
-export const geminiModel = genAI.getGenerativeModel({
-  model: "gemini-2.0-flash-thinking-exp",
-  systemInstruction: {
-    role: "system",
-    parts: [{ text: `
+export const getGeminiModel = () => {
+  return genAI.getGenerativeModel({
+    model: "gemini-2.0-flash-thinking-exp",
+    systemInstruction: {
+      role: "system",
+      parts: [{ text: `
 You are a Forensic Biometric Auditor specialized in Liveness Detection.
 Your task is to analyze video frames to detect "Presentation Attacks" (spoofing).
 
@@ -43,24 +44,25 @@ RETURN JSON ONLY:
   "anomalies": string[],
   "reasoning": "concise explanation"
 }
-    `}]
-  },
-  safetySettings: [
-    {
-      category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-      threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+      `}]
     },
-    {
-      category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-      threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-    },
-    {
-      category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-      threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-    },
-    {
-      category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-      threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-    },
-  ],
-});
+    safetySettings: [
+      {
+        category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+        threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+      },
+      {
+        category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+        threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+      },
+      {
+        category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+        threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+      },
+      {
+        category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+        threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+      },
+    ],
+  });
+};

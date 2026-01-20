@@ -1,13 +1,8 @@
 "use server";
 
-import { geminiModel } from "@/lib/gemini/geminiClient";
+import { getGeminiModel } from "@/lib/gemini/geminiClient";
 
-export interface LivenessResult {
-  is_real: boolean;
-  confidence: number;
-  anomalies: string[];
-  reasoning: string;
-}
+// ... (interface LivenessResult)
 
 export async function verifyLiveness(base64Image: string): Promise<LivenessResult> {
   try {
@@ -16,7 +11,7 @@ export async function verifyLiveness(base64Image: string): Promise<LivenessResul
 
     const prompt = "Analyze this image for liveness. Is this a real person or a deepfake/screen attack? Return JSON.";
 
-    const result = await geminiModel.generateContent([
+    const result = await getGeminiModel().generateContent([
       prompt,
       {
         inlineData: {
