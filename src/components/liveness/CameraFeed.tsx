@@ -122,13 +122,13 @@ export const CameraFeed = forwardRef<CameraFeedRef>((props, ref) => {
                          
                          const ctx = canvasRef.current.getContext("2d");
                          if (ctx) {
-                             // Draw video frame RAW - CSS handles mirroring
-                             ctx.drawImage(video, 0, 0, canvasRef.current.width, canvasRef.current.height);
+                             // Clear canvas
+                             ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
 
                              try {
                                  const results = landmarker.detectForVideo(video, startTimeMs);
-                                 // Draw face mesh with INVERTED coordinates to compensate CSS mirroring
-                                 drawFaceMesh(ctx, results, true);
+                                 // Draw face mesh exactly as MediaPipe detects it
+                                 drawFaceMesh(ctx, results, false);
                              } catch (err) {
                                  console.warn("Frame processing skipped:", err);
                              }
@@ -168,15 +168,15 @@ export const CameraFeed = forwardRef<CameraFeedRef>((props, ref) => {
   }
 
   return (
-    <div className="relative w-full max-w-[640px] aspect-video bg-black rounded-lg overflow-hidden mx-auto transform scale-x-[-1]">
+    <div className="relative w-full max-w-[640px] aspect-video bg-black rounded-lg overflow-hidden mx-auto">
         {error && (
-            <div className="absolute inset-0 flex items-center justify-center text-red-500 bg-black/80 z-20 text-center p-4 transform scale-x-[-1]">
+            <div className="absolute inset-0 flex items-center justify-center text-red-500 bg-black/80 z-20 text-center p-4">
                 {error}
             </div>
         )}
       <video
         ref={videoRef}
-        className="absolute top-0 left-0 w-full h-full object-contain opacity-0" 
+        className="absolute top-0 left-0 w-full h-full object-contain" 
         playsInline
         muted
         autoPlay
