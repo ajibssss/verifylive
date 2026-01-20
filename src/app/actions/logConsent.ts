@@ -4,8 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { headers } from "next/headers";
 
 export async function logConsent() {
-  const supabase = createClient();
-  const headerStore = headers();
+  const supabase = await createClient(); // Ensure client creation is awaited if needed (though createClient is async now)
+  const headerStore = await headers(); // FIX: headers() is async in Next.js 15+
   
   // 1. Get User
   const { data: { user } } = await supabase.auth.getUser();
