@@ -104,7 +104,7 @@ This project aligns with the **Action Era** and **Omni-Agent** themes by:
 ## 🎥 Demo & Submission
 
 - **Video Demo**: [Link to YouTube/Vimeo Demo] (Coming Soon)
-- **Live Demo**: [Link to Vercel Deployment] (Coming Soon)
+- **Live Demo**: [Live on Vercel](https://verifylive-d9wtmei7g-wagnerrafael.vercel.app)
 - **Devpost Submission**: [Link to Devpost]
 
 ## 🤝 Contributing
