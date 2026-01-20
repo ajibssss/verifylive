@@ -2,7 +2,8 @@
 
 import { useRef, useState } from "react";
 import { CameraFeed, CameraFeedRef } from "@/components/liveness/CameraFeed";
-import { verifyLiveness, LivenessResult } from "@/app/actions/verifyLiveness";
+import { verifyLiveness } from "@/app/actions/verifyLiveness";
+import type { LivenessResult } from "@/app/actions/verifyLiveness";
 
 export function LivenessContainer() {
   const cameraRef = useRef<CameraFeedRef>(null);
@@ -60,7 +61,7 @@ export function LivenessContainer() {
                     <h2 className="text-2xl font-bold mb-2">{result.is_real ? 'REAL PERSON' : 'POTENTIAL SPOOF'}</h2>
                     <p className="text-foreground mb-4 text-sm max-w-md">{result.reasoning}</p>
                     <div className="flex flex-wrap gap-2 justify-center mb-6">
-                        {result.anomalies.map((a, i) => (
+                        {result.anomalies.map((a: string, i: number) => (
                             <span key={i} className="px-2 py-1 bg-muted text-muted-foreground text-xs rounded border border-border">{a}</span>
                         ))}
                     </div>
