@@ -3,31 +3,64 @@
 import { useState } from "react";
 import { CameraFeed } from "./CameraFeed";
 import { ComplianceModal } from "../compliance/ComplianceModal";
-import { DocumentSelector, DocumentType } from "../verification/DocumentSelector";
+import { DocumentSelector, DocumentType, SubmissionMethod } from "../verification/DocumentSelector";
 import { DocumentCamera } from "../verification/DocumentCamera";
+import { PdfUploader } from "../verification/PdfUploader";
 import { toast } from "sonner";
+import { logConsent } from "@/app/actions/logConsent";
 
 export function LivenessContainer() {
   const [step, setStep] = useState<
-    "COMPLIANCE" | "DOC_SELECT" | "DOC_FRONT" | "DOC_BACK" | "LIVENESS_INTRO" | "LIVENESS_ACTIVE" | "ANALYZING" | "RESULT"
+    "COMPLIANCE" | "DOC_SELECT" | "DOC_FRONT" | "DOC_BACK" | "DOC_PDF" | "LIVENESS_INTRO" | "LIVENESS_ACTIVE" | "ANALYZING" | "RESULT"
   >("COMPLIANCE");
 
   const [documentType, setDocumentType] = useState<DocumentType | null>(null);
+  const [submissionMethod, setSubmissionMethod] = useState<SubmissionMethod | null>(null);
+  
   const [docFront, setDocFront] = useState<Blob | null>(null);
   const [docBack, setDocBack] = useState<Blob | null>(null);
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
 
   // 1. Compliance Accepted
-  const handleComplianceAccept = () => {
-    setStep("DOC_SELECT");
+  const handleComplianceAccept = async () => {
+    try {
+      const promise = logConsent();
+      toast.promise(promise, {
+        loading: "Registrando aceite...",
+        success: "Termos aceitos.",
+        error: "Erro ao registrar aceite."
+      });
+      
+      await promise;
+      setStep("DOC_SELECT");
+    } catch (error) {
+      console.error(error);
+      // Optional: Prevent proceeding if log fails? 
+      // For UX we might allow, but for strict compliance we should block.
+      // Current logic blocks via toast error + no setStep if await throws (it enters catch and doesn't run setStep).
+    }
   };
 
   // 2. Document Selected
-  const handleDocSelect = (type: DocumentType) => {
+  const handleDocSelect = (type: DocumentType, method: SubmissionMethod) => {
     setDocumentType(type);
-    setStep("DOC_FRONT");
+    setSubmissionMethod(method);
+
+    if (method === "PDF") {
+      setStep("DOC_PDF");
+    } else {
+      setStep("DOC_FRONT");
+    }
   };
 
-  // 3. Document Captures
+  // 3a. PDF Upload Logic
+  const handlePdfUpload = (file: File) => {
+    setPdfFile(file);
+    toast.success("Documento PDF carregado!");
+    setTimeout(() => setStep("LIVENESS_INTRO"), 500);
+  };
+
+  // 3b. Camera Logic
   const handleFrontCapture = (blob: Blob) => {
     setDocFront(blob);
     toast.success("Frente capturada com sucesso!");
@@ -37,7 +70,6 @@ export function LivenessContainer() {
   const handleBackCapture = (blob: Blob) => {
     setDocBack(blob);
     toast.success("Verso capturado com sucesso!");
-    // Here we would upload to storage in background
     setTimeout(() => setStep("LIVENESS_INTRO"), 500);
   };
 
@@ -59,7 +91,15 @@ export function LivenessContainer() {
         </div>
       )}
 
-      {/* Step 2: Capture Documents */}
+      {/* Step 2a: PDF Upload */}
+      {step === "DOC_PDF" && (
+        <PdfUploader 
+          onUpload={handlePdfUpload}
+          onBack={() => setStep("DOC_SELECT")}
+        />
+      )}
+
+      {/* Step 2b: Capture Documents (Camera) */}
       {step === "DOC_FRONT" && (
         <DocumentCamera 
           usage="FRONT"
