@@ -86,10 +86,24 @@ export const CameraFeed = forwardRef<CameraFeedRef>((props, ref) => {
         const syncCanvasDimensions = () => {
              if (videoRef.current && canvasRef.current) {
                  const video = videoRef.current;
-                 canvasRef.current.width = video.videoWidth;
-                 canvasRef.current.height = video.videoHeight;
+                 const canvas = canvasRef.current;
+                 
+                 // Only sync if dimensions changed
+                 if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
+                     console.log('[SYNC] Updating canvas dimensions:', {
+                         from: { width: canvas.width, height: canvas.height },
+                         to: { width: video.videoWidth, height: video.videoHeight }
+                     });
+                     canvas.width = video.videoWidth;
+                     canvas.height = video.videoHeight;
+                 }
              }
         };
+
+        // Sync on video metadata load
+        if (videoRef.current) {
+            videoRef.current.addEventListener('loadeddata', syncCanvasDimensions);
+        }
 
         let lastVideoTime = -1;
         const detect = () => {
@@ -105,7 +119,7 @@ export const CameraFeed = forwardRef<CameraFeedRef>((props, ref) => {
                      if (startTimeMs > lastVideoTime && startTimeMs - lastVideoTime > 33) {
                          lastVideoTime = startTimeMs;
                          
-                         // Sync canvas dimensions every frame
+                         // Sync canvas dimensions BEFORE drawing
                          syncCanvasDimensions();
                          
                          const ctx = canvasRef.current.getContext("2d");
@@ -115,6 +129,19 @@ export const CameraFeed = forwardRef<CameraFeedRef>((props, ref) => {
 
                              try {
                                  const results = landmarker.detectForVideo(video, startTimeMs);
+                                 
+                                 // Debug: log first point mapping
+                                 if (results.faceLandmarks?.[0]?.[0]) {
+                                     const point = results.faceLandmarks[0][0];
+                                     console.log('[POINT]', {
+                                         normalized: { x: point.x.toFixed(3), y: point.y.toFixed(3) },
+                                         canvas: { w: ctx.canvas.width, h: ctx.canvas.height },
+                                         pixels: { 
+                                             x: Math.round(point.x * ctx.canvas.width), 
+                                             y: Math.round(point.y * ctx.canvas.height)
+                                         }
+                                     });
+                                 }
                                  
                                  // Draw face mesh on top of video
                                  drawFaceMesh(ctx, results);
