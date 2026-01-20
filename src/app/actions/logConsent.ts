@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "../../lib/supabase/server";
 import { headers } from "next/headers";
 
 export async function logConsent() {
