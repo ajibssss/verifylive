@@ -2,7 +2,15 @@
 
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 
-export async function completeVerification(result: { success: boolean; details: any }) {
+interface VerificationResult {
+  success: boolean;
+  details: {
+    confidence: number;
+    [key: string]: any;
+  };
+}
+
+export async function completeVerification(result: VerificationResult) {
   // Use Admin Client to ensure we can write to profiles/logs system-wide
   const supabase = (await createAdminClient()) || (await createClient());
   const authClient = await createClient();

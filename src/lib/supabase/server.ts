@@ -15,14 +15,14 @@ export async function createClient() {
         get(name: string) {
           return cookieStore.get(name)?.value;
         },
-        set(name: string, value: string, options: any) {
+        set(name: string, value: string, options: Record<string, any>) {
           try {
             cookieStore.set({ name, value, ...options });
           } catch (error) {
             // Ignored
           }
         },
-        remove(name: string, options: any) {
+        remove(name: string, options: Record<string, any>) {
           try {
             cookieStore.set({ name, value: "", ...options });
           } catch (error) {
@@ -50,8 +50,8 @@ export async function createAdminClient() {
     {
       cookies: {
         get(name: string) { return "" },
-        set(name: string, value: string, options: any) {},
-        remove(name: string, options: any) {},
+        set(name: string, value: string, options: Record<string, any>) {},
+        remove(name: string, options: Record<string, any>) {},
       },
     }
   );

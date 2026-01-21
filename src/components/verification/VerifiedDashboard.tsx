@@ -1,10 +1,17 @@
 "use client";
 
-import { CheckCircle2, ShieldCheck, User } from "lucide-react";
+import { CheckCircle2, ShieldCheck, User as UserIcon } from "lucide-react";
+import { User } from "@supabase/supabase-js";
+
+interface Profile {
+  full_name?: string | null;
+  verified_at?: string | null;
+  [key: string]: any;
+}
 
 interface VerifiedDashboardProps {
-  user: any;
-  profile: any;
+  user: User;
+  profile: Profile | null;
 }
 
 export function VerifiedDashboard({ user, profile }: VerifiedDashboardProps) {
@@ -35,7 +42,7 @@ export function VerifiedDashboard({ user, profile }: VerifiedDashboardProps) {
                      <img src={user.user_metadata.avatar_url} className="w-10 h-10 rounded-full border border-gray-200" alt="Avatar"/>
                   ) : (
                      <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                        <User className="w-5 h-5 text-gray-500"/>
+                        <UserIcon className="w-5 h-5 text-gray-500"/>
                      </div>
                   )}
                   <div className="text-left">

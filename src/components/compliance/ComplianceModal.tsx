@@ -107,7 +107,7 @@ export function ComplianceModal({ onAccept, onDecline }: ComplianceModalProps) {
                </li>
                <li>
                    <a href="http://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm#art11" target="_blank" className="hover:underline">
-                      Art. 11, inc. II, alínea 'g', LGPD (Prevenção à fraude)
+                      Art. 11, inc. II, alínea &apos;g&apos;, LGPD (Prevenção à fraude)
                    </a>
                </li>
                <li>

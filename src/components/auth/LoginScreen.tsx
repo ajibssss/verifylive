@@ -25,9 +25,10 @@ export function LoginScreen() {
 
       if (error) throw error;
       
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      toast.error("Erro ao iniciar login: " + error.message);
+      const message = error instanceof Error ? error.message : "Erro desconhecido";
+      toast.error("Erro ao iniciar login: " + message);
       setLoading(false);
     }
   };
